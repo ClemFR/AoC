@@ -26,13 +26,15 @@ public class Main {
                     gauche.add(integers.getFirst());
                     droite.add(integers.getLast());
                 });
-
         Collections.sort(gauche);
         Collections.sort(droite);
 
         int sum = mapToList(gauche, droite)
                 .stream()
-                .mapToInt(gd -> Math.abs(gd.getGauche() - gd.getDroite())).sum();
+                .mapToInt(gd -> {
+                    int gMult = (int) droite.stream().filter(integer -> integer == gd.getGauche()).count();
+                    return Math.abs(gd.getGauche() * gMult);
+                }).sum();
 
         System.out.println("La somme est de " + sum);
     }
