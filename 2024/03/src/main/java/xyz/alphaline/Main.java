@@ -7,23 +7,27 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Main {
 
+    public static final String RGX_FILTER_DO = "(.*?)(?:(?:don't\\(\\)|\\Z).*?(?:do\\(\\)|\\Z)(.*?))+";
     public static final String RGX_MULT = "mul\\(([0-9]{1,3}),([0-9]{1,3})\\)";
 
     public static void main(String[] args) throws URISyntaxException, IOException {
 
         URI path = Main.class.getResource("/aocinput/input").toURI();
 
-        Pattern pattern = Pattern.compile(RGX_MULT);
+        Pattern patternDo = Pattern.compile(RGX_FILTER_DO);
+        Pattern patternMult = Pattern.compile(RGX_MULT);
+        // Soluce 1 : 174336360
 
-        int sumAllLines = Files.lines(Path.of(path)).mapToInt(line -> {
-            Matcher m = pattern.matcher(line);
-            return m.results().mapToInt(matchResult -> Integer.parseInt(matchResult.group(1)) * Integer.parseInt(matchResult.group(2))).sum();
-        }).sum();
+        String corruptedMemory = Files.lines(Path.of(path)).collect(Collectors.joining());
+        Matcher matchDo = patternDo.matcher(corruptedMemory);
 
-        System.out.println("La somme des multiplications est de " + sumAllLines);
+        int sum = matchDo.results().mapToInt(matcherDo -> patternMult.matcher(matcherDo.group(1))
+                .results().mapToInt(matcherMul -> Integer.parseInt(matcherMul.group(1)) * Integer.parseInt(matcherMul.group(2))).sum()).sum();
+        System.out.println("La somme des multiplications est de " + sum);
 
     }
 }
