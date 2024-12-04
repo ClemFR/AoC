@@ -34,6 +34,8 @@ public class Main {
         sum += Arrays.stream(mapRTtoLB(array)).mapToInt(s -> Math.toIntExact(pattern.matcher(s).results().count())).sum();
 
         System.out.println("XMAS trouvés : " + sum);
+
+        System.out.println("XMAS part 2 trouvés : " + findXMAS_Xshape(array));
     }
 
     /**
@@ -211,5 +213,44 @@ public class Main {
         }
 
         return reversed.toArray(new String[0]);
+    }
+
+    /**
+     * Partie 2 du problème.
+     * (En mode bourrin)
+     * M.S
+     * .A.
+     * M.S
+     * @param input La matrice d'entrée du problème
+     * @return le nombre de XMAS en forme d'étoiles
+     */
+    public static int findXMAS_Xshape(String[][] input) {
+
+        int sum = 0;
+
+        // Skip les cotés car on ne peut pas faire l'étoile si le "A" est sur un bord.
+        for (int line = 1; line < input.length - 1; line++) {
+            String[] lineChars = input[line];
+            for (int col = 1; col < lineChars.length - 1; col++) {
+
+                if (lineChars[col].equals("A")) {
+                    boolean LTtoRB = false;
+                    boolean LBtoRT = false;
+
+                    String Lt = input[line - 1][col - 1];
+                    String Lb = input[line + 1][col - 1];
+                    String Rt = input[line - 1][col + 1];
+                    String Rb = input[line + 1][col + 1];
+
+                    LTtoRB = Lt.equals("M") && Rb.equals("S") || Lt.equals("S") && Rb.equals("M");
+                    LBtoRT = Lb.equals("M") && Rt.equals("S") || Lb.equals("S") && Rt.equals("M");
+
+                    if (LTtoRB && LBtoRT) {
+                        sum += 1;
+                    }
+                }
+            }
+        }
+       return sum;
     }
 }
