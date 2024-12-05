@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 public class Manual {
 
@@ -27,13 +26,35 @@ public class Manual {
 
     public boolean applyRules(Collection<Rule> rules) {
         List<Integer> pages = List.of(manualPages);
-        List<Rule> reducedRules = rules.stream().filter(rule -> pages.contains(rule.getFirstPage())).toList();
+        List<Rule> reducedRules = rules.stream().filter(rule -> pages.contains(rule.getBeforePage())).toList();
 
         long unmatchedRules = reducedRules.stream().map(rule -> {
             return rule.applyToManual(this);
         }).filter(aBoolean -> !aBoolean).count();
 
         return unmatchedRules == 0L;
+    }
+
+    public Manual rectifyManualOrder(List<Rule> rules) {
+        List<Integer> pages = new ArrayList<>(List.of(manualPages));
+        List<Integer> orderedPages = new ArrayList<>();
+        List<Rule> reducedRules = rules.stream().filter(rule -> pages.contains(rule.getBeforePage())).toList();
+
+        List<Rule> orderedRules = Rule.generateOrderedRulesSet(reducedRules);
+        if (!Rule.validateRuleOrder(orderedRules)) {
+            System.out.println("Probleme : " + orderedRules);
+        }
+
+        for (Rule orderedRule : orderedRules) {
+            if (pages.contains(orderedRule.getBeforePage())) {
+                int ndx = pages.indexOf(orderedRule.getBeforePage());
+                orderedPages.add(pages.get(ndx));
+                pages.remove(ndx);
+            }
+        }
+
+        orderedPages.addAll(pages);
+        return new Manual(orderedPages.toArray(new Integer[0]));
     }
 
     /**
