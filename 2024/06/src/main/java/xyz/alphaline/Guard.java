@@ -2,6 +2,7 @@ package xyz.alphaline;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
 public class Guard {
 
@@ -10,6 +11,44 @@ public class Guard {
     private final Map map;
 
     private Facing facing;
+
+    public boolean discoverLoopTiles() {
+        boolean end = false;
+        while (!end) {
+            Tile nextTile = map.getGuardNextTile(this);
+            if (nextTile == null) return false;
+
+            if (nextTile.isObstructedGenerateLoop() || nextTile.getCrateState()) {
+                switch (facing) {
+                    case NORTH -> {
+                        if (nextTile.getHittingSides().contains(Facing.SOUTH)) {
+                            return true;
+                        }
+                    }
+                    case SOUTH -> {
+                        if (nextTile.getHittingSides().contains(Facing.NORTH)) {
+                            return true;
+                        }
+                    }
+                    case EAST -> {
+                        if (nextTile.getHittingSides().contains(Facing.WEST)) {
+                            return true;
+                        }
+                    }
+                    case WEST -> {
+                        if (nextTile.getHittingSides().contains(Facing.EAST)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            map.getGuardSittingTile(this).setVisitedFlag();
+            end = !step();
+        }
+
+        return false;
+    }
 
     public enum Facing {
         NORTH("^"),
@@ -42,7 +81,7 @@ public class Guard {
         }
     }
 
-    private Guard(int startX,
+    public Guard(int startX,
                  int startY,
                  Facing startFacing,
                  Map map)  {
@@ -102,37 +141,40 @@ public class Guard {
     }
 
     private boolean step() {
-        System.out.println("====================\n" + map);
+        // System.out.println("====================\n" + map);
         Tile nextTileSameFacing = map.getGuardNextTile(this);
         if (nextTileSameFacing == null) return false;
 
         switch (facing) {
             case NORTH -> {
-                if (!nextTileSameFacing.getCrateState()) {
+                if (!nextTileSameFacing.getCrateState() && !nextTileSameFacing.isObstructedGenerateLoop()) {
                     yPos--;
                 } else {
+                    nextTileSameFacing.addHittingSide(Facing.SOUTH);
                     facing = Facing.EAST;
                 }
-                break;
             }
             case SOUTH -> {
-                if (!nextTileSameFacing.getCrateState()) {
+                if (!nextTileSameFacing.getCrateState() && !nextTileSameFacing.isObstructedGenerateLoop()) {
                     yPos++;
                 } else {
+                    nextTileSameFacing.addHittingSide(Facing.NORTH);
                     facing = Facing.WEST;
                 }
             }
             case EAST -> {
-                if (!nextTileSameFacing.getCrateState()) {
+                if (!nextTileSameFacing.getCrateState() && !nextTileSameFacing.isObstructedGenerateLoop()) {
                     xPos++;
                 } else {
+                    nextTileSameFacing.addHittingSide(Facing.WEST);
                     facing = Facing.SOUTH;
                 }
             }
             case WEST -> {
-                if (!nextTileSameFacing.getCrateState()) {
+                if (!nextTileSameFacing.getCrateState() && !nextTileSameFacing.isObstructedGenerateLoop()) {
                     xPos--;
                 } else {
+                    nextTileSameFacing.addHittingSide(Facing.EAST);
                     facing = Facing.NORTH;
                 }
             }
@@ -140,6 +182,8 @@ public class Guard {
 
         return true;
     }
+
+
 
     /**
      * La valeur de facing.

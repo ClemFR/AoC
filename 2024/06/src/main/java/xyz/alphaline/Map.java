@@ -3,6 +3,7 @@ package xyz.alphaline;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 public class Map {
 
@@ -22,6 +23,13 @@ public class Map {
                     .map(s -> s.split(""))
                     .map(strings -> Arrays.stream(strings).map(Tile::getTileFromString).toArray(Tile[]::new))
                     .toArray(Tile[][]::new);
+
+            for (int y = 0; y < tiles.length; y++) {
+                for (int x = 0; x < tiles[y].length; x++) {
+                    tiles[y][x].setxPos(x);
+                    tiles[y][x].setyPox(y);
+                }
+            }
 
             return new Map(tiles);
 
@@ -90,7 +98,7 @@ public class Map {
         int y = 0;
         int x = 0;
         for (Tile[] line : tilesMap) {
-
+            x = 0;
             for (Tile tile : line) {
                 boolean drawn = false;
 
@@ -113,7 +121,6 @@ public class Map {
                         sb.append(tile.getVisitedState() ? "X" : ".");
                     }
                 }
-
                 x++;
             }
             sb.append("\n");
@@ -121,5 +128,27 @@ public class Map {
         }
 
         return sb.toString();
+    }
+
+    public String displayWithObstructedTiles() {
+        StringBuilder sb = new StringBuilder();
+
+        for (Tile[] line : tilesMap) {
+
+            for (Tile tile : line) {
+                if (tile.getCrateState()) {
+                    sb.append("#");
+                } else {
+                    sb.append(tile.isObstructedGenerateLoop() ? "O" : ".");
+                }
+            }
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
+
+    public Stream<Tile> getTilesStream() {
+        return Arrays.stream(tilesMap).flatMap(Arrays::stream);
     }
 }
