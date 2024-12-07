@@ -54,6 +54,9 @@ public class Equation {
                 case MULTIPLY -> {
                     sum = sum * nums.removeFirst();
                 }
+                case CONCAT -> {
+                    sum = Long.parseLong(String.valueOf(sum) + nums.removeFirst());
+                }
             }
         }
 
@@ -67,8 +70,9 @@ public class Equation {
         if (toFill == null) {
             List<OperatorsEnum> lte1 = new ArrayList<>(List.of(OperatorsEnum.ADD));
             List<OperatorsEnum> lte2 = new ArrayList<>(List.of(OperatorsEnum.MULTIPLY));
+            List<OperatorsEnum> lte3 = new ArrayList<>(List.of(OperatorsEnum.CONCAT));
 
-            ArrayList<List<OperatorsEnum>> lists = new ArrayList<>(new ArrayList<>(List.of(lte1, lte2)));
+            ArrayList<List<OperatorsEnum>> lists = new ArrayList<>(new ArrayList<>(List.of(lte1, lte2, lte3)));
             return recursiveGenerateOpsList(lists, opsSize - 1);
         } else {
             ArrayList<List<OperatorsEnum>> newOps = new ArrayList<>();
@@ -109,7 +113,8 @@ public class Equation {
 
     public enum OperatorsEnum {
         ADD("+"),
-        MULTIPLY("*");
+        MULTIPLY("*"),
+        CONCAT("||");
 
         public final String str;
 
