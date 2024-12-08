@@ -10,6 +10,6 @@ public class Main {
         System.out.println(map);
 
         long antinodes = map.locationStream().filter(Location::isAntinode).count();
-        System.out.println("Part 1 : " + antinodes + " antinodes trouvées !");
+        System.out.println("Part 2 : " + antinodes + " antinodes trouvées !");
     }
 }

@@ -52,9 +52,14 @@ public class Map {
                     int posXAntinode = antenna2.getXPos() + xDst;
                     int posYAntinode = antenna2.getYPos() + yDst;
 
+                    antenna2.setAntinode(true);
+
                     Location antinode = getLocationFromCoordinates(posXAntinode, posYAntinode);
-                    if (antinode != null) {
+                    while (antinode != null) {
                         antinode.setAntinode(true);
+                        posXAntinode += xDst;
+                        posYAntinode += yDst;
+                        antinode = getLocationFromCoordinates(posXAntinode, posYAntinode);
                     }
                 }
             }
