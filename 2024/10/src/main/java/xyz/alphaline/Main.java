@@ -16,6 +16,7 @@ public class Main {
                 .toArray(int[][]::new);
 
         System.out.println("Part 1 : " + solvePart1(heatMap));
+        System.out.println("Part 2 : " + solvePart2(heatMap));
     }
 
     public static int solvePart1(int[][] map) {
@@ -26,6 +27,23 @@ public class Main {
             for (int i = 0; i < map[ndxLine].length; i++) {
                 if (map[ndxLine][i] == 0) {
                     int find = findNextLayerPart1(map, ndxLine, i, new ArrayList<>());
+                    sum += find;
+//                    System.out.println(find);
+                }
+            }
+        }
+
+        return sum;
+    }
+
+    public static int solvePart2(int[][] map) {
+
+        int sum = 0;
+
+        for (int ndxLine = 0; ndxLine < map.length; ndxLine++) {
+            for (int i = 0; i < map[ndxLine].length; i++) {
+                if (map[ndxLine][i] == 0) {
+                    int find = findNextLayerPart2(map, ndxLine, i);
                     sum += find;
 //                    System.out.println(find);
                 }
@@ -61,6 +79,31 @@ public class Main {
         }
         if (arrayCoordsEqualsTo(map, curLine, curCol - 1, goal)) {
             sum += findNextLayerPart1(map, curLine, curCol - 1, founds);
+        }
+
+        return sum;
+
+    }
+
+    public static int findNextLayerPart2(int[][] map, int curLine, int curCol) {
+        int sum = 0;
+        int curHeight = map[curLine][curCol];
+        if (curHeight == 9) {
+            return 1;
+        }
+
+        int goal = curHeight + 1;
+        if (arrayCoordsEqualsTo(map, curLine + 1, curCol, goal)) {
+            sum += findNextLayerPart2(map, curLine + 1, curCol);
+        }
+        if (arrayCoordsEqualsTo(map, curLine - 1, curCol, goal)) {
+            sum += findNextLayerPart2(map, curLine - 1, curCol);
+        }
+        if (arrayCoordsEqualsTo(map, curLine, curCol + 1, goal)) {
+            sum += findNextLayerPart2(map, curLine, curCol + 1);
+        }
+        if (arrayCoordsEqualsTo(map, curLine, curCol - 1, goal)) {
+            sum += findNextLayerPart2(map, curLine, curCol - 1);
         }
 
         return sum;
