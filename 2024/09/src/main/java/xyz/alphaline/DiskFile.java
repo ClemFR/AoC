@@ -26,4 +26,12 @@ public class DiskFile {
     public int getFileId() {
         return fileId;
     }
+
+    /**
+     * La valeur de blocks.
+     * @return La valeur de blocks
+     */
+    public List<DiskFileBlock> getBlocks() {
+        return blocks;
+    }
 }
