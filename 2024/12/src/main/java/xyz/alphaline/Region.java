@@ -11,6 +11,8 @@ public class Region {
 
     private int perimeter;
 
+    private int sides;
+
     public Region(String t) {
         type = t;
     }
@@ -21,6 +23,29 @@ public class Region {
 
     public void calculatePerimeter() {
         perimeter = plots.stream().mapToInt(Plot::getNbExposedSides).sum();
+    }
+
+    public void calculateSides() {
+        sides = 0;
+        List<Plot> ext = new ArrayList<>(plots.stream().filter(p -> p.getNbExposedSides() > 0).toList());
+        while (!ext.isEmpty()) {
+            Plot plot = ext.getFirst();
+
+            List<Side> remainingSides = new ArrayList<>(plot.getExposedPlotSide());
+            remainingSides.removeAll(plot.getUsedSides());
+            if (remainingSides.isEmpty()) {
+                throw new RuntimeException("DAFUQ ???");
+            }
+
+            List<Plot> adjacentOnSide = plot.getAdjacentOnSide(remainingSides.getFirst());
+            sides += 1;
+            ext.removeAll(adjacentOnSide.stream().filter(plot1 -> plot1.getExposedPlotSide().size() == plot1.getUsedSides().size()).toList());
+        }
+
+    }
+
+    public boolean containsPlot(Plot p) {
+        return plots.contains(p);
     }
 
     /**
@@ -35,12 +60,16 @@ public class Region {
         return plots.size();
     }
 
-    public int getPrice() {
+    public int getFullPrice() {
         return plots.size() * perimeter;
+    }
+
+    public int getDiscountPrice() {
+        return plots.size() * sides;
     }
 
     @Override
     public String toString() {
-        return type + " - " + plots.size() + " * " + perimeter + " = " + getPrice();
+        return type + " - " + sides + " --> " + getDiscountPrice();
     }
 }

@@ -10,8 +10,13 @@ public class Main {
         Farm farm = new Farm(input);
         List<Region> regions = farm.getRegions();
 
-        int sum = regions.stream().mapToInt(Region::getPrice).sum();
-        System.out.println("Part 1 : " + sum);
+        int sumP1 = regions.stream().mapToInt(Region::getFullPrice).sum();
+        System.out.println("Part 1 : " + sumP1);
+
+        // regions.forEach(System.out::println);
+
+        int sumP2 = regions.stream().mapToInt(Region::getDiscountPrice).sum();
+        System.out.println("Part 2 : " + sumP2);
 
     }
 }

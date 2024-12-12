@@ -62,8 +62,4 @@ public class Farm {
         return plotMap[y][x];
     }
 
-
-
-
-
 }
