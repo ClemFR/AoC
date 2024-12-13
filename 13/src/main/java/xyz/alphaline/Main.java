@@ -16,5 +16,7 @@ public class Main {
                 .sum();
 
         System.out.println("Part 1 : " + sumPt1);
+
+        // I'm not a mathematician RIP P2.
     }
 }
